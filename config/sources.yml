@@ -25,7 +25,7 @@ sources:
     coverage: UNKNOWN - subscription destination set, not all European markets
     license: restricted    # non-redistributable: indexed or YoY-delta form only
     cost: subscription (held)
-    status: blocked        # blocked on inspection of one report file
+    status: deferred       # see docs/backlog.md; spec complete, retrieval undecided
     indicators: [occupancy, adr, revpar, supply_roomnights, demand_roomnights]
     notes: >
       Primary spine. Sender destin@str.com, attachment
@@ -301,6 +301,25 @@ sources:
       short-term headwind. No clean structured source exists. Needs design work.
 
   # ============ 9. COST BASE ============
+  - id: construction_proxy
+    name: Building permits and construction output (supply proxy)
+    provider: Eurostat / national statistics offices
+    category: supply
+    access: api
+    auth: null
+    refresh_interval_hours: 168
+    geo_level: nuts
+    coverage: EU/EEA; UK, CH, TR need separate handling
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [building_permits_index, construction_output_yoy]
+    notes: >
+      Stand-in for hotel pipeline while STR Pipeline is unavailable. Covers all
+      building types, not hotels specifically, so it is a weak and lagged proxy.
+      Must carry confidence < 1.0 on every Observation so the scoring engine
+      discounts it rather than treating it as equivalent to a real pipeline feed.
+
   - id: cost_inputs
     name: Labour, energy and insurance cost indices
     provider: Eurostat / national

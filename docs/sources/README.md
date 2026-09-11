@@ -27,9 +27,9 @@ Each source gets `docs/sources/<source_id>.md` answering, in order:
 
 | # | Task | Source | Why this order | Status |
 |---|------|--------|----------------|--------|
-| 0 | Market crosswalk | STR Destination Report destination list | Every other source joins to this spine. Blocks everything. | Blocked on file access |
-| 1 | Lodging performance | `str_destination` | The dependent variable. Without it there is no way to validate any other signal. | **Specced, blocked** |
-| 2 | Supply pipeline | none identified | NOT entitled. Strong signal with no source. Needs a buy-or-proxy decision. | **Open gap** |
+| 0 | Market crosswalk | NUTS + IATA + ISO country (ADR 0001) | Every other source joins to this spine. Blocks everything. | Pending |
+| 1 | Lodging performance | `str_destination` | Specced. Deferred by decision, see docs/backlog.md. | Deferred |
+| 2 | Supply pipeline | `construction_proxy` | Public proxy chosen over a paid feed. Low confidence by design. | Pending |
 | 3 | Air connectivity, live | `eurocontrol` | Free, daily, no auth. Highest frequency signal in the stack. Now carries the live layer. | **Next** |
 | 4 | Air connectivity, forward | `oag` | Best leading indicator, but a buy decision. | Pending |
 | 5 | FX | `ecb_fx` | Free, daily, trivial to wire, real explanatory power for leisure markets. | Pending |
