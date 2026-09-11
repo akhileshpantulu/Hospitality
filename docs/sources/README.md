@@ -30,7 +30,7 @@ Each source gets `docs/sources/<source_id>.md` answering, in order:
 | 0 | Market crosswalk | NUTS + IATA + ISO country (ADR 0001) | Every other source joins to this spine. Blocks everything. | Pending |
 | 1 | Lodging performance | `str_destination` | Specced. Deferred by decision, see docs/backlog.md. | Deferred |
 | 2 | Supply pipeline | `construction_proxy` | Public proxy chosen over a paid feed. Low confidence by design. | Pending |
-| 3 | Air connectivity, live | `eurocontrol` | Free, daily, no auth. Highest frequency signal in the stack. Now carries the live layer. | **Next** |
+| 3 | Air connectivity, live | `eurocontrol` | Free, daily, no auth. Carries the live layer alone now that STR is deferred. | **Blocked, see ADR 0002** |
 | 4 | Air connectivity, forward | `oag` | Best leading indicator, but a buy decision. | Pending |
 | 5 | FX | `ecb_fx` | Free, daily, trivial to wire, real explanatory power for leisure markets. | Pending |
 | 6 | Macro | `ecb_sdw`, `eurostat_macro`, `oecd` | Slow-moving; sets the baseline rather than the signal. | Pending |
@@ -69,3 +69,9 @@ Trend/STAR. Three consequences that change the design:
    independently and must be reconciled to whatever the report actually covers.
    Markets outside that set keep a place in the dashboard but carry no lodging
    data and must be flagged, not scored as merely missing.
+
+**2026-09-11, environment.** The egress proxy allowlist blocks every data source
+domain in the registry (ADR 0002). Sources can still be researched and specced
+via web search, but no connector can be tested against a live endpoint here
+until the allowlist is extended. This does not affect the production design; a
+pipeline in GitHub Actions or on Highgate infrastructure has normal egress.
