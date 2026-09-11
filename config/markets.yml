@@ -1,0 +1,86 @@
+# European market universe.
+#
+# The `keys` block is the crosswalk that lets every source join to the same
+# market spine. STR/CoStar market boundaries are the primary spine because
+# lodging performance is the highest-value signal; other sources map onto it.
+#
+# STATUS: DRAFT UNIVERSE. Crosswalk keys are deliberately null. Populating them
+# is sourcing Task 0 (see docs/sources/README.md) and must be done against the
+# authoritative code lists, not from memory.
+#
+# tier:  1 = core institutional market, 2 = secondary, 3 = resort/seasonal
+# demand_profile: drives which indicators get weighted for this market
+
+meta:
+  region: Europe
+  spine: str_market
+  status: draft
+  review_required: true
+
+markets:
+  # --- United Kingdom & Ireland ---
+  - {id: uk-london,      name: London,            country: GB, tier: 1, demand_profile: [corporate, group, leisure], keys: {str_market: null, nuts: null, airports: [LHR, LGW, STN, LTN, LCY]}}
+  - {id: uk-edinburgh,   name: Edinburgh,         country: GB, tier: 2, demand_profile: [leisure, group],            keys: {str_market: null, nuts: null, airports: [EDI]}}
+  - {id: uk-manchester,  name: Manchester,        country: GB, tier: 2, demand_profile: [corporate, group],          keys: {str_market: null, nuts: null, airports: [MAN]}}
+  - {id: ie-dublin,      name: Dublin,            country: IE, tier: 1, demand_profile: [corporate, leisure],         keys: {str_market: null, nuts: null, airports: [DUB]}}
+
+  # --- France ---
+  - {id: fr-paris,       name: Paris,             country: FR, tier: 1, demand_profile: [corporate, group, leisure], keys: {str_market: null, nuts: null, airports: [CDG, ORY]}}
+  - {id: fr-cotedazur,   name: Nice / Cote d'Azur, country: FR, tier: 3, demand_profile: [leisure, group],            keys: {str_market: null, nuts: null, airports: [NCE]}}
+  - {id: fr-lyon,        name: Lyon,              country: FR, tier: 2, demand_profile: [corporate, group],          keys: {str_market: null, nuts: null, airports: [LYS]}}
+
+  # --- Iberia ---
+  - {id: es-madrid,      name: Madrid,            country: ES, tier: 1, demand_profile: [corporate, group, leisure], keys: {str_market: null, nuts: null, airports: [MAD]}}
+  - {id: es-barcelona,   name: Barcelona,         country: ES, tier: 1, demand_profile: [leisure, group],            keys: {str_market: null, nuts: null, airports: [BCN]}}
+  - {id: es-malaga,      name: Malaga / Costa del Sol, country: ES, tier: 3, demand_profile: [leisure],              keys: {str_market: null, nuts: null, airports: [AGP]}}
+  - {id: es-mallorca,    name: Mallorca,          country: ES, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [PMI]}}
+  - {id: es-canaries,    name: Canary Islands,    country: ES, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [TFS, LPA, ACE, FUE]}}
+  - {id: es-seville,     name: Seville,           country: ES, tier: 2, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [SVQ]}}
+  - {id: es-valencia,    name: Valencia,          country: ES, tier: 2, demand_profile: [leisure, group],            keys: {str_market: null, nuts: null, airports: [VLC]}}
+  - {id: pt-lisbon,      name: Lisbon,            country: PT, tier: 1, demand_profile: [leisure, corporate, group], keys: {str_market: null, nuts: null, airports: [LIS]}}
+  - {id: pt-porto,       name: Porto,             country: PT, tier: 2, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [OPO]}}
+  - {id: pt-algarve,     name: Algarve,           country: PT, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [FAO]}}
+
+  # --- Italy ---
+  - {id: it-rome,        name: Rome,              country: IT, tier: 1, demand_profile: [leisure, group],            keys: {str_market: null, nuts: null, airports: [FCO, CIA]}}
+  - {id: it-milan,       name: Milan,             country: IT, tier: 1, demand_profile: [corporate, group, leisure], keys: {str_market: null, nuts: null, airports: [MXP, LIN, BGY]}}
+  - {id: it-venice,      name: Venice,            country: IT, tier: 2, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [VCE]}}
+  - {id: it-florence,    name: Florence,          country: IT, tier: 2, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [FLR]}}
+  - {id: it-naples,      name: Naples / Amalfi,   country: IT, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [NAP]}}
+
+  # --- DACH ---
+  - {id: de-berlin,      name: Berlin,            country: DE, tier: 1, demand_profile: [leisure, group, corporate], keys: {str_market: null, nuts: null, airports: [BER]}}
+  - {id: de-munich,      name: Munich,            country: DE, tier: 1, demand_profile: [corporate, group],          keys: {str_market: null, nuts: null, airports: [MUC]}}
+  - {id: de-frankfurt,   name: Frankfurt,         country: DE, tier: 1, demand_profile: [corporate, group],          keys: {str_market: null, nuts: null, airports: [FRA]}}
+  - {id: de-hamburg,     name: Hamburg,           country: DE, tier: 2, demand_profile: [corporate, leisure],        keys: {str_market: null, nuts: null, airports: [HAM]}}
+  - {id: de-dusseldorf,  name: Dusseldorf,        country: DE, tier: 2, demand_profile: [corporate, group],          keys: {str_market: null, nuts: null, airports: [DUS]}}
+  - {id: at-vienna,      name: Vienna,            country: AT, tier: 1, demand_profile: [leisure, group],            keys: {str_market: null, nuts: null, airports: [VIE]}}
+  - {id: ch-zurich,      name: Zurich,            country: CH, tier: 1, demand_profile: [corporate],                 keys: {str_market: null, nuts: null, airports: [ZRH]}}
+  - {id: ch-geneva,      name: Geneva,            country: CH, tier: 2, demand_profile: [corporate, group],          keys: {str_market: null, nuts: null, airports: [GVA]}}
+
+  # --- Benelux ---
+  - {id: nl-amsterdam,   name: Amsterdam,         country: NL, tier: 1, demand_profile: [leisure, corporate, group], keys: {str_market: null, nuts: null, airports: [AMS]}}
+  - {id: be-brussels,    name: Brussels,          country: BE, tier: 2, demand_profile: [corporate, group],          keys: {str_market: null, nuts: null, airports: [BRU]}}
+
+  # --- Nordics ---
+  - {id: se-stockholm,   name: Stockholm,         country: SE, tier: 2, demand_profile: [corporate, leisure],        keys: {str_market: null, nuts: null, airports: [ARN]}}
+  - {id: dk-copenhagen,  name: Copenhagen,        country: DK, tier: 1, demand_profile: [corporate, leisure, group], keys: {str_market: null, nuts: null, airports: [CPH]}}
+  - {id: no-oslo,        name: Oslo,              country: NO, tier: 2, demand_profile: [corporate],                 keys: {str_market: null, nuts: null, airports: [OSL]}}
+  - {id: fi-helsinki,    name: Helsinki,          country: FI, tier: 2, demand_profile: [corporate],                 keys: {str_market: null, nuts: null, airports: [HEL]}}
+  - {id: is-reykjavik,   name: Reykjavik,         country: IS, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [KEF]}}
+
+  # --- Central & Eastern Europe ---
+  - {id: cz-prague,      name: Prague,            country: CZ, tier: 1, demand_profile: [leisure, group],            keys: {str_market: null, nuts: null, airports: [PRG]}}
+  - {id: hu-budapest,    name: Budapest,          country: HU, tier: 2, demand_profile: [leisure, group],            keys: {str_market: null, nuts: null, airports: [BUD]}}
+  - {id: pl-warsaw,      name: Warsaw,            country: PL, tier: 2, demand_profile: [corporate, group],          keys: {str_market: null, nuts: null, airports: [WAW, WMI]}}
+  - {id: pl-krakow,      name: Krakow,            country: PL, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [KRK]}}
+  - {id: hr-dalmatia,    name: Split / Dubrovnik, country: HR, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [SPU, DBV]}}
+  - {id: ro-bucharest,   name: Bucharest,         country: RO, tier: 3, demand_profile: [corporate],                 keys: {str_market: null, nuts: null, airports: [OTP]}}
+
+  # --- Greece, Turkey & Mediterranean islands ---
+  - {id: gr-athens,      name: Athens,            country: GR, tier: 2, demand_profile: [leisure, group],            keys: {str_market: null, nuts: null, airports: [ATH]}}
+  - {id: gr-crete,       name: Crete,             country: GR, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [HER, CHQ]}}
+  - {id: gr-cyclades,    name: Santorini / Mykonos, country: GR, tier: 3, demand_profile: [leisure],                 keys: {str_market: null, nuts: null, airports: [JTR, JMK]}}
+  - {id: tr-istanbul,    name: Istanbul,          country: TR, tier: 1, demand_profile: [leisure, corporate, group], keys: {str_market: null, nuts: null, airports: [IST, SAW]}}
+  - {id: tr-antalya,     name: Antalya,           country: TR, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [AYT]}}
+  - {id: mt-malta,       name: Malta,             country: MT, tier: 3, demand_profile: [leisure],                   keys: {str_market: null, nuts: null, airports: [MLA]}}

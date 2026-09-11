@@ -1,0 +1,325 @@
+# Source registry.
+#
+# status:  proposed -> approved -> wired   (or rejected, with a reason)
+# NOTHING here is ingested yet. Each source gets specced, decided on, and wired
+# individually. See docs/sources/README.md for the working queue.
+#
+# refresh_interval_hours is what the scheduler honours. The pipeline ticks
+# daily; a monthly series with interval 168 is checked weekly, not 30x/month.
+
+meta:
+  status: all_proposed
+  ingested: none
+
+sources:
+
+  # ============ 1. LODGING PERFORMANCE (the spine) ============
+  - id: str_costar
+    name: STR / CoStar hospitality benchmarking
+    provider: CoStar
+    category: demand_lodging
+    access: api            # confirm: REST API vs scheduled report export
+    auth: STR_API_KEY
+    refresh_interval_hours: 24
+    geo_level: market
+    coverage: All European STR markets
+    license: restricted    # non-redistributable: derived index only
+    cost: subscription (held)
+    status: proposed
+    indicators: [occupancy, adr, revpar, supply_rooms, demand_roomnights]
+    notes: >
+      Primary spine. Defines market boundaries every other source maps onto.
+      Licence forbids redistributing raw ADR/RevPAR, so the dashboard must show
+      indexed or YoY-delta form only.
+
+  - id: str_pipeline
+    name: STR construction pipeline
+    provider: CoStar
+    category: supply
+    access: api
+    auth: STR_API_KEY
+    refresh_interval_hours: 168
+    geo_level: market
+    coverage: All European STR markets
+    license: restricted
+    cost: bundled with above
+    status: proposed
+    indicators: [rooms_under_construction, rooms_final_planning, pipeline_pct_existing]
+    notes: Supply headwind. Best expressed as % of existing supply, not absolute rooms.
+
+  # ============ 2. AIR CONNECTIVITY ============
+  - id: eurocontrol
+    name: EUROCONTROL daily traffic
+    provider: EUROCONTROL
+    category: demand_air
+    access: bulk_download
+    auth: null
+    refresh_interval_hours: 24
+    geo_level: airport
+    coverage: European airports, daily flight counts
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [daily_flights, flights_yoy]
+    notes: Free, daily, genuinely live. Strong candidate for the highest-frequency signal.
+
+  - id: oag
+    name: OAG / Cirium schedules and seat capacity
+    provider: OAG or Cirium
+    category: demand_air
+    access: api
+    auth: OAG_API_KEY
+    refresh_interval_hours: 168
+    geo_level: airport
+    coverage: Global, forward-looking schedules
+    license: restricted
+    cost: subscription (NOT held - decide)
+    status: proposed
+    indicators: [forward_seats, forward_seats_yoy, inbound_seats_by_origin]
+    notes: >
+      Forward seat capacity is the single best leading indicator of market
+      demand 3-9 months out. Paid. Decide whether to buy or proxy.
+
+  - id: eurostat_avia
+    name: Eurostat air passenger transport
+    provider: Eurostat
+    category: demand_air
+    access: api
+    auth: null
+    refresh_interval_hours: 168
+    geo_level: airport
+    coverage: EU/EEA airports, monthly, ~3 month lag
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [air_pax_monthly, air_pax_yoy]
+    notes: Free fallback for OAG on the backward-looking side. Lagged, not leading.
+
+  # ============ 3. TOURISM & VISITATION ============
+  - id: eurostat_tour
+    name: Eurostat tourism nights spent
+    provider: Eurostat
+    category: tourism
+    access: api
+    auth: null
+    refresh_interval_hours: 168
+    geo_level: nuts
+    coverage: EU/EEA at NUTS2, monthly, 2-4 month lag
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [nights_spent, nights_spent_yoy, nights_foreign_share]
+    notes: >
+      Covers all accommodation, not just branded hotels. Useful as a check on
+      whether STR-tracked supply is gaining or losing share to alternatives.
+
+  - id: unwto
+    name: UN Tourism international arrivals
+    provider: UN Tourism (UNWTO)
+    category: tourism
+    access: manual_upload
+    auth: null
+    refresh_interval_hours: 720
+    geo_level: country
+    coverage: Global, country-level, heavily lagged
+    license: restricted
+    cost: partly paid
+    status: proposed
+    indicators: [intl_arrivals, intl_receipts]
+    notes: Low frequency. Context only, probably not scored.
+
+  - id: national_stats
+    name: National statistics offices (INE, ISTAT, ONS, Destatis, etc.)
+    provider: various
+    category: tourism
+    access: api
+    auth: null
+    refresh_interval_hours: 168
+    geo_level: nuts
+    coverage: Country-by-country, inconsistent
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [hotel_nights_national, arrivals_national]
+    notes: >
+      Faster than Eurostat for the big markets (ES, IT, GB, DE) but each is a
+      separate connector. High maintenance cost. Decide per country, not as a block.
+
+  # ============ 4. GROUP & EVENT DEMAND ============
+  - id: event_calendar
+    name: Convention centre and major event calendars
+    provider: various venues
+    category: group
+    access: scrape
+    auth: null
+    refresh_interval_hours: 168
+    geo_level: market
+    coverage: Manual per market
+    license: public
+    cost: free
+    status: proposed
+    indicators: [compression_nights, major_event_count]
+    notes: >
+      High signal value for tier-1 corporate markets, high maintenance cost.
+      Likely worth it for only the top 10-15 markets.
+
+  # ============ 5. MACRO ============
+  - id: ecb_sdw
+    name: ECB Data Portal
+    provider: European Central Bank
+    category: macro
+    access: api
+    auth: null
+    refresh_interval_hours: 24
+    geo_level: country
+    coverage: Euro area and EU
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [policy_rate, hicp, consumer_confidence]
+
+  - id: eurostat_macro
+    name: Eurostat macro aggregates
+    provider: Eurostat
+    category: macro
+    access: api
+    auth: null
+    refresh_interval_hours: 168
+    geo_level: nuts
+    coverage: EU/EEA, some series at NUTS2
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [gdp_growth, unemployment, real_wage_growth]
+
+  - id: oecd
+    name: OECD indicators
+    provider: OECD
+    category: macro
+    access: api
+    auth: null
+    refresh_interval_hours: 168
+    geo_level: country
+    coverage: Incl. non-EU Europe (CH, GB, TR, NO, IS)
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [cli, business_confidence, gdp_growth]
+    notes: Fills the gap where Eurostat stops (UK, Switzerland, Turkey, Norway).
+
+  # ============ 6. FX ============
+  - id: ecb_fx
+    name: ECB daily reference rates
+    provider: European Central Bank
+    category: fx
+    access: api
+    auth: null
+    refresh_interval_hours: 24
+    geo_level: country
+    coverage: EUR crosses, daily
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [fx_rate, fx_yoy, inbound_purchasing_power]
+    notes: >
+      Matters most for markets with a large non-euro source-market mix
+      (USD into Southern Europe, GBP into Iberia, TRY effects in Istanbul).
+      Requires a source-market mix weighting to be meaningful.
+
+  # ============ 7. NEWS & SENTIMENT ============
+  - id: gdelt
+    name: GDELT global news graph
+    provider: GDELT Project
+    category: news
+    access: api
+    auth: null
+    refresh_interval_hours: 24
+    geo_level: market
+    coverage: Global, 15-minute updates
+    license: public
+    cost: free
+    status: proposed
+    indicators: [news_volume, news_tone, event_flags]
+    notes: >
+      Free and genuinely live, but noisy. Needs a per-market query definition
+      and tone baselining or it will produce false signals constantly.
+
+  - id: news_api
+    name: Curated trade and financial news feed
+    provider: TBD
+    category: news
+    access: api
+    auth: NEWS_API_KEY
+    refresh_interval_hours: 24
+    geo_level: market
+    coverage: TBD
+    license: restricted
+    cost: TBD
+    status: proposed
+    indicators: [headline_digest]
+    notes: For the narrative layer of the dashboard, not for scoring.
+
+  # ============ 8. RISK & DISRUPTION ============
+  - id: travel_advisories
+    name: Government travel advisories
+    provider: FCDO / US State Dept / Auswaertiges Amt
+    category: risk
+    access: api
+    auth: null
+    refresh_interval_hours: 24
+    geo_level: country
+    coverage: Global
+    license: public
+    cost: free
+    status: proposed
+    indicators: [advisory_level, advisory_change_flag]
+    notes: A change in level is the signal, not the level itself.
+
+  - id: disruption
+    name: Strikes, closures, natural events
+    provider: TBD
+    category: risk
+    access: scrape
+    auth: null
+    refresh_interval_hours: 24
+    geo_level: market
+    coverage: TBD
+    license: public
+    cost: free
+    status: proposed
+    indicators: [disruption_flag]
+    notes: >
+      European air traffic control and rail strikes are a recurring, material
+      short-term headwind. No clean structured source exists. Needs design work.
+
+  # ============ 9. COST BASE ============
+  - id: cost_inputs
+    name: Labour, energy and insurance cost indices
+    provider: Eurostat / national
+    category: cost
+    access: api
+    auth: null
+    refresh_interval_hours: 168
+    geo_level: country
+    coverage: EU/EEA
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [labour_cost_index, energy_price_index, hotel_margin_proxy]
+    notes: Separates a RevPAR tailwind from an actual profit tailwind.
+
+  # ============ 10. CAPITAL MARKETS ============
+  - id: transactions
+    name: Hotel transaction volume and yields
+    provider: CoStar / RCA / MSCI
+    category: capital
+    access: api
+    auth: null
+    refresh_interval_hours: 720
+    geo_level: market
+    coverage: Europe, quarterly
+    license: restricted
+    cost: check entitlement
+    status: proposed
+    indicators: [transaction_volume, prime_yield, yield_shift]
+    notes: Confirm whether the CoStar entitlement already covers this.
