@@ -7,7 +7,7 @@ positive tailwinds against significant headwinds.
 
 Every market gets a composite signal built from independent, individually
 sourced indicators: demand, supply, macro, cost, and risk. The dashboard shows
-which markets are accelerating, which are deteriorating, and — critically —
+which markets are accelerating, which are deteriorating, and - critically -
 *which indicator is driving the call*, so the output is auditable rather than a
 black-box score.
 
@@ -28,7 +28,7 @@ black-box score.
 ## Status
 
 Scaffolding only. **No indicator data has been ingested.** Sources are being
-worked through one at a time — see `docs/sources/README.md` for the queue.
+worked through one at a time - see `docs/sources/README.md` for the queue.
 
 ## Layout
 

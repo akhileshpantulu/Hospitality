@@ -1,6 +1,6 @@
 """Normalized observation schema.
 
-Every source — licensed or public, daily or annual, metro-level or national —
+Every source - licensed or public, daily or annual, metro-level or national -
 lands in the `Observation` shape below. The scoring engine reads only this
 shape, so adding a source never requires touching scoring logic.
 """
