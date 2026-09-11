@@ -8,29 +8,32 @@
 # daily; a monthly series with interval 168 is checked weekly, not 30x/month.
 
 meta:
-  status: all_proposed
+  status: sourcing_in_progress
   ingested: none
 
 sources:
 
   # ============ 1. LODGING PERFORMANCE (the spine) ============
-  - id: str_costar
-    name: STR / CoStar hospitality benchmarking
-    provider: CoStar
+  - id: str_destination
+    name: STR Destination Report (Highgate Hotels Intl Ltd)
+    provider: STR / CoStar
     category: demand_lodging
-    access: api            # confirm: REST API vs scheduled report export
-    auth: STR_API_KEY
-    refresh_interval_hours: 24
+    access: email_attachment
+    auth: null             # see docs/sources/str_destination_report.md, retrieval options A-D
+    refresh_interval_hours: 720   # monthly; arrives ~17th-18th of following month
     geo_level: market
-    coverage: All European STR markets
-    license: restricted    # non-redistributable: derived index only
+    coverage: UNKNOWN - subscription destination set, not all European markets
+    license: restricted    # non-redistributable: indexed or YoY-delta form only
     cost: subscription (held)
-    status: proposed
-    indicators: [occupancy, adr, revpar, supply_rooms, demand_roomnights]
+    status: blocked        # blocked on inspection of one report file
+    indicators: [occupancy, adr, revpar, supply_roomnights, demand_roomnights]
     notes: >
-      Primary spine. Defines market boundaries every other source maps onto.
-      Licence forbids redistributing raw ADR/RevPAR, so the dashboard must show
-      indexed or YoY-delta form only.
+      Primary spine. Sender destin@str.com, attachment
+      HighgateHotelsIntlLtd_<YYYYMM>.xls. Binary attachments are not readable
+      through the M365 connector and no copy exists in SharePoint or Box, so
+      retrieval needs a decision. Monthly cadence means STR anchors the level
+      but cannot drive the live layer. Destination set defines the market
+      spine, so config/markets.yml must be reconciled to it.
 
   - id: str_pipeline
     name: STR construction pipeline
@@ -40,12 +43,17 @@ sources:
     auth: STR_API_KEY
     refresh_interval_hours: 168
     geo_level: market
-    coverage: All European STR markets
+    coverage: n/a
     license: restricted
-    cost: bundled with above
-    status: proposed
+    cost: NOT ENTITLED - buy decision required
+    status: rejected
     indicators: [rooms_under_construction, rooms_final_planning, pipeline_pct_existing]
-    notes: Supply headwind. Best expressed as % of existing supply, not absolute rooms.
+    notes: >
+      NOT in the current entitlement (Destination Report only). Supply is one of
+      the strongest medium-term headwind signals and currently has NO source.
+      Alternatives: Lodging Econometrics (paid), STR Pipeline add-on (paid),
+      Eurostat building permits (weak proxy), or manual tracking for tier-1
+      markets only. Open decision, see docs/sources/str_destination_report.md s10.
 
   # ============ 2. AIR CONNECTIVITY ============
   - id: eurocontrol

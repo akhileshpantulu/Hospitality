@@ -27,10 +27,10 @@ Each source gets `docs/sources/<source_id>.md` answering, in order:
 
 | # | Task | Source | Why this order | Status |
 |---|------|--------|----------------|--------|
-| 0 | Market crosswalk | `str_costar` market list | Every other source joins to this spine. Blocks everything. | **Next** |
-| 1 | Lodging performance | `str_costar` | The dependent variable. Without it there is no way to validate any other signal. | Pending |
-| 2 | Supply pipeline | `str_pipeline` | Same credential, same join, immediate headwind signal. | Pending |
-| 3 | Air connectivity, live | `eurocontrol` | Free, daily, no auth. Highest frequency signal in the stack. | Pending |
+| 0 | Market crosswalk | STR Destination Report destination list | Every other source joins to this spine. Blocks everything. | Blocked on file access |
+| 1 | Lodging performance | `str_destination` | The dependent variable. Without it there is no way to validate any other signal. | **Specced, blocked** |
+| 2 | Supply pipeline | none identified | NOT entitled. Strong signal with no source. Needs a buy-or-proxy decision. | **Open gap** |
+| 3 | Air connectivity, live | `eurocontrol` | Free, daily, no auth. Highest frequency signal in the stack. Now carries the live layer. | **Next** |
 | 4 | Air connectivity, forward | `oag` | Best leading indicator, but a buy decision. | Pending |
 | 5 | FX | `ecb_fx` | Free, daily, trivial to wire, real explanatory power for leisure markets. | Pending |
 | 6 | Macro | `ecb_sdw`, `eurostat_macro`, `oecd` | Slow-moving; sets the baseline rather than the signal. | Pending |
@@ -54,3 +54,18 @@ there is a live, refreshing dashboard early, even if thin.
 News and event sources come last deliberately. They are the easiest to add and
 the easiest to get wrong: an unbaselined news-tone signal generates constant
 false positives, and it is only diagnosable against a working scored base.
+
+## Findings log
+
+**2026-09-11, Source 1 (STR).** Entitlement is the Destination Report, not
+Trend/STAR. Three consequences that change the design:
+
+1. **Monthly, not daily.** Data arrives 17-18 days after month end, so effective
+   staleness is 18-48 days. STR anchors the level; it cannot drive a live view.
+   The dashboard is two-speed and must say so on its face.
+2. **No pipeline entitlement.** Supply headwind has no source. Logged as an open
+   gap rather than quietly dropped.
+3. **The destination set defines the universe.** `config/markets.yml` was drafted
+   independently and must be reconciled to whatever the report actually covers.
+   Markets outside that set keep a place in the dashboard but carry no lodging
+   data and must be flagged, not scored as merely missing.
