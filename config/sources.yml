@@ -64,12 +64,19 @@ sources:
     auth: null
     refresh_interval_hours: 24
     geo_level: airport
-    coverage: European airports, daily flight counts
+    coverage: European airports; verify TR participation and small resort airports
     license: attribution
     cost: free
-    status: proposed
-    indicators: [daily_flights, flights_yoy]
-    notes: Free, daily, genuinely live. Strong candidate for the highest-frequency signal.
+    status: approved_blocked   # approved in principle; mechanics need egress (ADR 0002)
+    indicators: [daily_flights, flights_yoy, flights_yoy_7dma]
+    notes: >
+      Carries the live layer alone now that STR is deferred. Score the smoothed
+      7-day series, not the daily print: day-of-week effects and single-day
+      disruptions otherwise generate constant false signals. Joins on IATA but
+      EUROCONTROL uses ICAO, so an IATA-ICAO mapping is needed. Join quality is
+      poor for multi-airport markets and road-accessible resorts; those need a
+      lower confidence value rather than exclusion.
+      See docs/sources/eurocontrol.md.
 
   - id: oag
     name: OAG / Cirium schedules and seat capacity

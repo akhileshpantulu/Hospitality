@@ -30,7 +30,7 @@ Each source gets `docs/sources/<source_id>.md` answering, in order:
 | 0 | Market crosswalk | NUTS + IATA + ISO country (ADR 0001) | Every other source joins to this spine. Blocks everything. | Pending |
 | 1 | Lodging performance | `str_destination` | Specced. Deferred by decision, see docs/backlog.md. | Deferred |
 | 2 | Supply pipeline | `construction_proxy` | Public proxy chosen over a paid feed. Low confidence by design. | Pending |
-| 3 | Air connectivity, live | `eurocontrol` | Free, daily, no auth. Carries the live layer alone now that STR is deferred. | **Blocked, see ADR 0002** |
+| 3 | Air connectivity, live | `eurocontrol` | Free, daily, no auth. Carries the live layer alone now that STR is deferred. | Approved, blocked on egress |
 | 4 | Air connectivity, forward | `oag` | Best leading indicator, but a buy decision. | Pending |
 | 5 | FX | `ecb_fx` | Free, daily, trivial to wire, real explanatory power for leisure markets. | Pending |
 | 6 | Macro | `ecb_sdw`, `eurostat_macro`, `oecd` | Slow-moving; sets the baseline rather than the signal. | Pending |
