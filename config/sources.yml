@@ -103,30 +103,40 @@ sources:
     auth: null
     refresh_interval_hours: 168
     geo_level: airport
-    coverage: EU/EEA airports, monthly, ~3 month lag
+    coverage: EU/EEA airports and airport pairs, monthly, ~3 month lag
     license: attribution
     cost: free
     status: proposed
-    indicators: [air_pax_monthly, air_pax_yoy]
-    notes: Free fallback for OAG on the backward-looking side. Lagged, not leading.
+    indicators: [air_pax_monthly, air_pax_yoy, inbound_pax_by_origin, source_market_mix]
+    notes: >
+      avia_par_<cc> gives airport-to-airport route passengers, which yields a
+      source-market mix per market. That mix is what makes FX weighting
+      meaningful rather than decorative, so this now gates ecb_fx scoring.
+      Complements rather than duplicates EUROCONTROL: EUROCONTROL counts flights
+      today, this says where passengers actually came from. Also avia_paoc at
+      country level. See docs/sources/eurostat.md.
 
   # ============ 3. TOURISM & VISITATION ============
   - id: eurostat_tour
-    name: Eurostat tourism nights spent
+    name: Eurostat tourism nights spent and arrivals
     provider: Eurostat
     category: tourism
-    access: api
+    access: api          # production: ec.europa.eu. exploration: eurostat-mcp-server
     auth: null
     refresh_interval_hours: 168
     geo_level: nuts
-    coverage: EU/EEA at NUTS2, monthly, 2-4 month lag
+    coverage: EU/EEA at NUTS2, monthly, 2-4 month lag; UK excluded post-Brexit
     license: attribution
     cost: free
     status: proposed
-    indicators: [nights_spent, nights_spent_yoy, nights_foreign_share]
+    indicators: [nights_spent, nights_spent_yoy, arrivals, length_of_stay, nights_foreign_share]
     notes: >
-      Covers all accommodation, not just branded hotels. Useful as a check on
-      whether STR-tracked supply is gaining or losing share to alternatives.
+      PROMOTED. With STR deferred this is the closest public proxy to lodging
+      demand, not merely a cross-check. Primary series tour_occ_nin2m (NUTS2,
+      monthly). Covers ALL tourist accommodation, not branded hotels, so a
+      market losing share to short-term rentals looks healthier here than STR
+      would show. Must not be presented as an STR substitute.
+      See docs/sources/eurostat.md.
 
   - id: unwto
     name: UN Tourism international arrivals
@@ -308,24 +318,45 @@ sources:
       short-term headwind. No clean structured source exists. Needs design work.
 
   # ============ 9. COST BASE ============
+  - id: eurostat_capacity
+    name: Eurostat tourist accommodation capacity (supply proxy)
+    provider: Eurostat
+    category: supply
+    access: api
+    auth: null
+    refresh_interval_hours: 720
+    geo_level: nuts
+    coverage: EU/EEA NUTS2 from 2012; UK excluded post-Brexit, CH/NO/IS/TR vary
+    license: attribution
+    cost: free
+    status: proposed
+    indicators: [bed_places, bed_places_yoy, supply_demand_balance]
+    notes: >
+      tour_cap_nuts2d. Primary supply measure, replacing building permits per
+      ADR 0003. Pairs with tour_occ_nin2m on the same geography and source, so
+      bed-place growth against nights-spent growth gives a real supply-demand
+      balance. Annual, so it measures realised supply, not forward pipeline.
+      Includes campsites and holiday dwellings, whose share varies hugely by
+      market, so score the within-market time series only and never compare
+      bed-place levels across markets. Confidence < 1.0.
+
   - id: construction_proxy
-    name: Building permits and construction output (supply proxy)
+    name: Building permits and construction output
     provider: Eurostat / national statistics offices
     category: supply
     access: api
     auth: null
     refresh_interval_hours: 168
-    geo_level: nuts
+    geo_level: country
     coverage: EU/EEA; UK, CH, TR need separate handling
     license: attribution
     cost: free
-    status: proposed
+    status: secondary
     indicators: [building_permits_index, construction_output_yoy]
     notes: >
-      Stand-in for hotel pipeline while STR Pipeline is unavailable. Covers all
-      building types, not hotels specifically, so it is a weak and lagged proxy.
-      Must carry confidence < 1.0 on every Observation so the scoring engine
-      discounts it rather than treating it as equivalent to a real pipeline feed.
+      Demoted to a secondary directional hint per ADR 0003. Covers all building
+      types, so it moves for reasons unrelated to lodging supply. Useful only as
+      a hint about direction ahead of bed places, never as a level.
 
   - id: cost_inputs
     name: Labour, energy and insurance cost indices

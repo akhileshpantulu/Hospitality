@@ -50,7 +50,14 @@ data-api.ecb.europa.eu
 www.ecb.europa.eu
 sdmx.oecd.org
 api.gdeltproject.org
+eurostat.caseyjhand.com
 ```
+
+`eurostat.caseyjhand.com` hosts the `eurostat-mcp-server` MCP connector
+registered on 2026-09-11. It fails the same way: `403 Forbidden` on the CONNECT
+tunnel. Note that `claude mcp list` reports this as "Needs authentication",
+which is misleading and would send someone hunting for a credential that does
+not exist.
 
 Add later, per country, if national statistics connectors are built:
 `www.ons.gov.uk`, `www.ine.es`, `esploradati.istat.it`, `www-genesis.destatis.de`.

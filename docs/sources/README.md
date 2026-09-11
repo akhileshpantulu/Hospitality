@@ -29,12 +29,12 @@ Each source gets `docs/sources/<source_id>.md` answering, in order:
 |---|------|--------|----------------|--------|
 | 0 | Market crosswalk | NUTS + IATA + ISO country (ADR 0001) | Every other source joins to this spine. Blocks everything. | Pending |
 | 1 | Lodging performance | `str_destination` | Specced. Deferred by decision, see docs/backlog.md. | Deferred |
-| 2 | Supply pipeline | `construction_proxy` | Public proxy chosen over a paid feed. Low confidence by design. | Pending |
+| 2 | Supply | `eurostat_capacity` | Bed places, not building permits (ADR 0003). Pairs with the demand series on the same geography. | Blocked on egress |
 | 3 | Air connectivity, live | `eurocontrol` | Free, daily, no auth. Carries the live layer alone now that STR is deferred. | Approved, blocked on egress |
 | 4 | Air connectivity, forward | `oag` | Best leading indicator, but a buy decision. | Pending |
 | 5 | FX | `ecb_fx` | Free, daily, trivial to wire, real explanatory power for leisure markets. | Pending |
 | 6 | Macro | `ecb_sdw`, `eurostat_macro`, `oecd` | Slow-moving; sets the baseline rather than the signal. | Pending |
-| 7 | Tourism | `eurostat_tour`, `national_stats` | Cross-check on STR share, not a primary signal. | Pending |
+| 4 | Tourism | `eurostat_tour` | **Promoted.** With STR deferred this is the closest public proxy to lodging demand. Shortlist drafted. | Blocked on egress |
 | 8 | News and sentiment | `gdelt` | Needs a scored baseline before it is trustworthy. | Pending |
 | 9 | Risk and disruption | `travel_advisories`, `disruption` | Event-driven overlay on top of a working scored base. | Pending |
 | 10 | Cost and capital | `cost_inputs`, `transactions` | Turns a RevPAR call into a profit and value call. | Pending |
@@ -75,3 +75,29 @@ domain in the registry (ADR 0002). Sources can still be researched and specced
 via web search, but no connector can be tested against a live endpoint here
 until the allowlist is extended. This does not affect the production design; a
 pipeline in GitHub Actions or on Highgate infrastructure has normal egress.
+
+**2026-09-11, Eurostat (source 4).** Registered the `eurostat-mcp-server` MCP
+connector. It is blocked by the same egress allowlist (403 on CONNECT), which
+`claude mcp list` misreports as "Needs authentication".
+
+Kept the exploration path and the production path separate: explore via the MCP
+server, ingest via Eurostat's own API on `ec.europa.eu`. The MCP server is a
+third-party wrapper on a personal domain, which is fine for interactive work but
+a poor dependency for a scheduled pipeline, both for availability and for data
+provenance.
+
+Three findings from the dataset research:
+
+1. **Eurostat tourism is promoted from cross-check to primary demand signal.**
+   With STR deferred, `tour_occ_nin2m` (nights spent, NUTS 2, monthly) is the
+   closest public proxy to lodging demand available. It covers all tourist
+   accommodation rather than branded hotels, so it must not be presented as an
+   STR substitute.
+2. **Bed places replace building permits as the supply proxy (ADR 0003).**
+   `tour_cap_nuts2d` measures accommodation supply directly and shares a
+   geography and source with the demand series, which makes a real supply-demand
+   balance measure possible.
+3. **`avia_par_<cc>` gives source-market mix.** Airport-pair passenger data
+   yields inbound passengers by origin per market. This is what makes FX
+   weighting meaningful, so it now gates `ecb_fx` scoring rather than being
+   optional.
